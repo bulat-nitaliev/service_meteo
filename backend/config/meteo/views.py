@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-import openmeteo_requests
-import pandas as pd
-import requests_cache
-from retry_requests import retry
+import requests
+# import openmeteo_requests
+# import pandas as pd
+# import requests_cache
+# from retry_requests import retry
 from rest_framework.response import Response
 from meteo.serializers import CitySerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -14,6 +15,9 @@ class MeteoViewSet(APIView):
     def get(self, request):
         url = 'https://api.open-meteo.com/v1/forecast?latitude=52.1452&longitude=45.423'
         params = '&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,wind_speed_10m'
+        res = requests.get(url+params)
+        return Response({'res': dict(res.json())})
+
 
 class CityViewSet(ReadOnlyModelViewSet):
     queryset = City.objects.all()
