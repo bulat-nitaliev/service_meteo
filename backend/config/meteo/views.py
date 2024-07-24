@@ -13,7 +13,10 @@ from meteo.models import User, City
 
 class MeteoViewSet(APIView):
     def get(self, request):
-        url = 'https://api.open-meteo.com/v1/forecast?latitude=52.1452&longitude=45.423'
+        longitude = request.GET.get('longitude')
+        latitude = request.GET.get('latitude')
+        print(latitude,longitude)
+        url = f'https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}'
         params = '&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,wind_speed_10m'
         res = requests.get(url+params)
         return Response({'res': dict(res.json())})
