@@ -2,12 +2,7 @@
     <div class="navbar">        
         <div @click="$router.push('/')">Kapital</div>
         <div class="navbar__btns">
-            <my-button v-if="isAuth" @click="$router.push('/prof')" >Проф. мероприятия</my-button>
-            <my-button v-if="isAuth" @click="$router.push('/disp')" >Дисп. набл.</my-button>
-            <my-button v-if="isAuth" @click="$router.push('/report')" >Отчет Инфобип</my-button>
-            <my-button v-if="isAuth" @click="$router.push('/scheta')" >Счета</my-button>
-            <my-button v-if="isAuth" @click="$router.push('/reportkmsik')" >Отчеты</my-button>
-            <my-button v-if="isAuth" @click="$router.push('/rab')" >Списки работодат.</my-button>
+           
             <my-button v-if="!isAuth" @click="$router.push('/login')" >Login</my-button>
             <my-button v-if="isAuth" @click="userLogout" >Logout</my-button>
             <my-button v-if="!isAuth" @click="$router.push('/registr')" >Register</my-button>

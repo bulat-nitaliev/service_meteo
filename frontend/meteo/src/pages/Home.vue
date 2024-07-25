@@ -1,7 +1,7 @@
 <template>
     <div>
-        <my-button @click="userList">Получить список пользователей</my-button>
-        <div v-for="user in list_users" :key="user.id">
+        <my-button @click="userCity">Получить список просмотренных городов</my-button>
+        <div v-for="user in list_citys" :key="user.id">
             <div>{{ user.first_name}}</div>
             <div>{{ user.last_name}}</div>
             <div>{{user.email}}</div>
@@ -22,14 +22,15 @@
           type="text"
           >
         
-        <div
+        <div 
+          v-if="isSelect"
+          class="autocoplite">
+          <div
           v-for="l in lst"
           :key="l"
-          
          class="container">
          <span @click="selectCity">{{ l.name }} - {{ l.country }} - {{ l.admin1 }}</span>
-          
-          <!-- </v-avtocomlete> -->
+        </div>
         </div>
           
         
@@ -43,7 +44,7 @@
 </template>
 
 <script>
-import $api_search from '@/http'
+import $api from '@/http'
 import axios from 'axios'
 export default {
   data(){
@@ -52,14 +53,18 @@ export default {
       lst: [],
       latitude:'',
       longitude:'',
+      list_citys:[],
+      isSelect: false,
+      city_name: ''
     }
     
   },
   methods:{
     async fetchInput(){
-      const val = 'search?name=' + this.inp
-      const res = await $api_search.get(val)
+      const val = 'https://geocoding-api.open-meteo.com/v1/search?name=' + this.inp
+      const res = await axios.get(val)
       this.lst = res.data['results']
+      this.isSelect = true
     },
     selectCity(e){
       console.log(e.target.outerText);
@@ -71,12 +76,24 @@ export default {
       this.inp = e.target.outerText
       this.longitude =  val[0].longitude
       this.latitude =  val[0].latitude
+      this.isSelect = false
+      this.city_name = e.target.outerText
     },
     async showPogoda(){
-      const  url_drf = 'http://127.0.0.1:8000/'
-      const res = await axios.get(url_drf+`api/meteo/?latitude=${this.latitude}&longitude=${this.longitude}`)
-      console.log(res);
+      try {
+        const res = await $api.get(`api/meteo/?latitude=${this.latitude}&longitude=${this.longitude}`)
+        const res_city = await $api.post(`api/city`, {'name': this.city_name, 'latitude': this.latitude, 'longitude': this.longitude})
+        console.log(res);
+        console.log(res_city);
+      } catch (error) {
+        console.log(error);
+      }
+      
 
+    },
+    async userCity(){
+      const res_city = await $api.get(`api/city`)
+      console.log(res_city);
     }
   },
 //   mounted () {
