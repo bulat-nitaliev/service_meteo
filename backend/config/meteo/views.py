@@ -15,11 +15,12 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveMode
 from rest_framework import status
 
 class UserViewSet(CreateModelMixin,ListModelMixin,RetrieveModelMixin, GenericViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
 
     def get_serializer_class(self):
         if self.action == 'create':
+            self.permission_classes = [AllowAny]
             return UserRegisterationSerializer
         
 
@@ -56,20 +57,22 @@ class CityViewSet(APIView):
         res = request.data
         res['user'] = request.user.pk
         
-        citys = City.objects.filter(name=res['name'])
+        citys = City.objects.all().filter(name=res['name'])
         
-        print(citys)
         if not citys:
-            res['count'] = 1 
+            res['count_city'] = 1 
             serializer = CitySerializer(data=res)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif citys: 
-            count = citys.count + 1
-            citys.count = count
-            citys.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            print([i.count_city for i in citys])
+            count = [i.count_city for i in citys][0] + 1
+            # citys.count = count
+            print(count)
+            citys.update(count_city=count)
+            # citys.save()
+            return Response({'res': [(i.name,i.count_city) for i in citys]}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
